@@ -18,13 +18,21 @@ router.post('/add', async(req, res) => {
         console.log('insert');
         if (err) throw err;
     });
-    res.send('Recibido');
+    res.redirect('/links');
 })
 
-router.post('/', async(req, res) => {
-    const links = await pool.query('SELECT * FROM links ');
-    console.log(links);
-    res.send('Listas');
+router.get('/', async(req, res) => {
+    let consultaSQL = 'SELECT * FROM links';
+    await pool.query(consultaSQL, function(err, result) {
+        res.render('links/list', { result });
+    });
+})
+
+router.get('/delete/:id', async(req, res) => {
+    const { id } = req.params;
+    await pool.query('DELETE FROM links WHERE ID = ?', [id])
+    res.redirect('/links');
+
 })
 
 module.exports = router;
