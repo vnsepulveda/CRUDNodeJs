@@ -37,11 +37,24 @@ router.get('/delete/:id', async(req, res) => {
 
 router.get('/edit/:id', async(req, res) => {
     const { id } = req.params;
+    let consultaSQL = 'SELECT * FROM links WHERE id = ' + [id];
+    await pool.query(consultaSQL, function(err, result) {
+        res.render('links/edit', { result: result[0] });
+    });
+})
 
-    pool.query('SELECT * FROM links WHERE id = ?', [id])
-    res.render('/links/edit', )
-
-
+router.post('/edit/:id', async(req, res) => {
+    const { id } = req.params;
+    const { titulo, descripcion, url } = req.body;
+    const newLink = {
+        titulo,
+        descripcion,
+        url
+    }
+    await pool.query('UPDATE links set ? WHERE id = ?', [newLink, id], function(err, result) {
+        if (err) throw err;
+    });
+    res.redirect('/links');
 })
 
 module.exports = router;
